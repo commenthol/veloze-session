@@ -1,0 +1,14 @@
+node_modules
+coverage
+tmp
+lib
+
+/*.log
+/*.tgz
+/.env*
+/*.crt
+/*.key
+
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
