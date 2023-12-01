@@ -34,7 +34,8 @@ In your code:
 
 ```js
 import { Server, cookieParser } from 'veloze'
-import { session, CookieStore } from '@veloze/session'
+import { session } from '@veloze/session'
+import { CookieStore } from '@veloze/session/CookieStore'
 
 const app = new Server()
 
@@ -69,7 +70,8 @@ Using Memory store
 
 ```js
 import { Server, cookieParser } from 'veloze'
-import { session, MemoryStore } from '@veloze/session'
+import { session } from '@veloze/session'
+import { MemoryStore } from '@veloze/session/MemoryStore'
 
 const app = new Server()
 

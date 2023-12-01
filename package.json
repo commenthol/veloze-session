@@ -3,10 +3,10 @@
   "version": "0.1.0-0",
   "description": "session store",
   "keywords": [],
-  "homepage": "https://github.com/commenthol/veloze-store",
+  "homepage": "https://github.com/commenthol/veloze-session",
   "repository": {
     "type": "git",
-    "url": "https://github.com/commenthol/veloze-store.git"
+    "url": "https://github.com/commenthol/veloze-session.git"
   },
   "license": "MIT",
   "author": "commenthol <commenthol@gmail.com>",
@@ -17,6 +17,25 @@
     "src",
     "types"
   ],
+  "exports": {
+    ".": {
+      "import": "./src/index.js"
+    },
+    "./CookieStore": {
+      "import": "./src/stores/CookieStore.js"
+    },
+    "./MemoryStore": {
+      "import": "./src/stores/MemoryStore.js"
+    },
+    "./MongoStore": {
+      "import": "./src/stores/MongoStore.js"
+    },
+    "./RedisStore": {
+      "import": "./src/stores/RedisStore.js"
+    },
+    "./types": "./types",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "all": "npm-run-all lint coverage types",
     "changelog": "conv-changelog -t groups -o",
@@ -37,7 +56,7 @@
     "veloze": "^0.7.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
+    "@types/node": "^20.10.1",
     "c8": "^8.0.1",
     "eslint": "^8.54.0",
     "eslint-config-standard": "^17.1.0",
@@ -46,6 +65,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "ioredis": "^5.3.2",
     "mocha": "^10.2.0",
+    "mongodb": "^6.3.0",
     "npm-run-all2": "^6.1.1",
     "sinon": "^17.0.1",
     "supertest": "^6.3.3",

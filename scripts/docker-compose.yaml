@@ -6,6 +6,15 @@ services:
     ports:
       - '6379:6379'
 
+  mongodb:
+    # https://hub.docker.com/_/mongo
+    image: docker.io/library/mongo:7.0
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+
   # mariadb:
   #   # https://hub.docker.com/_/mariadb
   #   image: docker.io/library/mariadb:11.1
@@ -35,15 +44,6 @@ services:
   #   environment:
   #     - POSTGRES_USER=root
   #     - POSTGRES_PASSWORD=example
-
-  # mongodb:
-  #   # https://hub.docker.com/_/mongo
-  #   image: docker.io/library/mongo:7.0
-  #   ports:
-  #     - "27017:27017"
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=example
 
 networks:
   hostnet:

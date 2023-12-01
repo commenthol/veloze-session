@@ -1,6 +1,7 @@
 import { Server, send, cookieParser, queryParser, utils } from 'veloze'
 import assert from 'assert/strict'
-import { session, MemoryStore } from '../src/index.js'
+import { session } from '../src/index.js'
+import { MemoryStore } from '../src/stores/MemoryStore.js'
 import supertest from 'supertest'
 
 describe('session middleware', function () {

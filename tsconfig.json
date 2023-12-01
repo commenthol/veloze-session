@@ -12,6 +12,6 @@
     "emitDeclarationOnly": true,
     "noEmitOnError": true
   },
-  "include": ["src/*.js"],
+  "include": ["src/*.js", "src/stores/*.js"],
   "exclude": ["node_modules", "test", "bin"]
 }

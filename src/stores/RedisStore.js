@@ -1,6 +1,8 @@
 import Redis from 'ioredis'
 
 /**
+ * @typedef {import('ioredis').RedisOptions} RedisOptions
+ */ /**
  * @typedef {import('../Session.js').Session} Session
  */ /**
  * @typedef {import('../types.js').Store} Store
@@ -22,8 +24,7 @@ export class RedisStore {
    *  password?: string
    *  keyPrefix?: string
    *  [prop: string]: any
-   * }} opts
-   *
+   * }} opts store options
    * - client: optional redis client instance (all other options are ignored)
    * - host: default='127.0.0.1'
    * - port: default=6379
@@ -31,7 +32,7 @@ export class RedisStore {
    * - username: authentication
    * - password: authentication
    * - keyPrefix: default='session'
-   * - additional properties for redis driver config
+   * - [prop] {RedisOptions}: additional properties for redis config
    */
   constructor(opts) {
     const {
@@ -42,18 +43,21 @@ export class RedisStore {
       username,
       password,
       keyPrefix = 'session:',
+      /** @type {RedisOptions} */
       ...redisOpts
     } = opts || {}
     this._keyPrefix = keyPrefix
-    this._redis = client || new Redis({
-      host,
-      port,
-      db,
-      username,
-      password,
-      keyPrefix,
-      ...redisOpts
-    })
+    this._redis =
+      client ||
+      new Redis({
+        host,
+        port,
+        db,
+        username,
+        password,
+        keyPrefix,
+        ...redisOpts
+      })
   }
 
   close() {
