@@ -22,7 +22,10 @@
     "changelog": "conv-changelog -t groups -o",
     "ci": "CI=true npm-run-all lint coverage types",
     "coverage": "c8 -r html -r text npm t",
-    "lint": "eslint --ext js .",
+    "dc": "docker-compose -f ./scripts/docker-compose.yaml",
+    "dc:down": "npm run dc -- down",
+    "dc:up": "npm run dc -- up -d",
+    "lint": "eslint --ext js . --fix",
     "test": "mocha",
     "types": "rm -rf types; tsc"
   },
@@ -30,19 +33,26 @@
     "recursive": true
   },
   "dependencies": {
+    "debug-level": "^3.1.2",
+    "veloze": "^0.7.0"
   },
   "devDependencies": {
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.10.0",
     "c8": "^8.0.1",
-    "eslint": "^8.52.0",
+    "eslint": "^8.54.0",
     "eslint-config-standard": "^17.1.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^16.2.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-n": "^16.3.1",
     "eslint-plugin-promise": "^6.1.1",
+    "ioredis": "^5.3.2",
     "mocha": "^10.2.0",
     "npm-run-all2": "^6.1.1",
-    "sinon": "^17.0.0",
-    "typescript": "^5.2.2"
+    "sinon": "^17.0.1",
+    "supertest": "^6.3.3",
+    "typescript": "^5.3.2"
+  },
+  "peerDependencies": {
+    "ioredis": "^5.3.2"
   },
   "engines": {
     "node": ">=18"

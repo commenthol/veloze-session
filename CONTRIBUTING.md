@@ -175,7 +175,7 @@ Enhancement suggestions are tracked as [GitHub issues](/issues).
 
 3. Modify the code
 
-4. Commit your changes. This project uses [conventional-commits][]. 
+4. Commit your changes. This project uses [conventional-commits][].
    See [Commit Messages](#commit-messages).
 
 5. Create a pull request
