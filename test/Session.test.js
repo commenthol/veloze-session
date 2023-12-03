@@ -1,6 +1,6 @@
 import { deepEqual, equal } from 'assert/strict'
 import { Session } from '../src/Session.js'
-import { nap } from './helper.js'
+import { nap } from './support/helper.js'
 
 describe('Session', function () {
   it('shall not overwrite internal props', function () {

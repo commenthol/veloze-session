@@ -1,29 +1,53 @@
 import { dotenv } from '@commenthol/dotconfig'
 import assert from 'assert'
-import { nap, isDockerRunning, describeBool } from './support/helper.js'
-
 import { Session } from '../src/Session.js'
-import { MongoClient } from 'mongodb'
-import { MongoStore } from '../src/stores/MongoStore.js'
+import { nap, isDockerRunning, describeBool } from './support/helper.js'
+import { createDatabasePostgres } from './support/sqlCreateDatabase.js'
+
+import { Sequelize } from 'sequelize'
+import { SqlStore } from '../src/stores/SqlStore.js'
 
 dotenv.config()
 
-const { MONGODB_URL = 'mongodb://root:example@127.0.0.1:27017' } = process.env
+const {
+  SQLDB_USER = 'root',
+  SQLDB_PASSWORD = 'example',
+  SQLDB_HOST = '127.0.0.01',
+  SQLDB_PORT = '5432',
+  SQLDB_DATABASE = 'test',
+  SQLDB_DIALECT = 'postgres'
+} = process.env
 
-describeBool(isDockerRunning('mongo'))('MongoStore', function () {
+const user = SQLDB_USER
+const password = SQLDB_PASSWORD
+const host = SQLDB_HOST
+const port = SQLDB_PORT
+const database = SQLDB_DATABASE
+const dialect = SQLDB_DIALECT
+
+describeBool(isDockerRunning('postgres'))('SqlStore', function () {
   let store
   let client
+
   before(async function () {
-    client = new MongoClient(MONGODB_URL)
-    store = new MongoStore({
-      database: 'test',
-      client
+    await createDatabasePostgres({ user, password, host, port, database: 'root' })
+    await createDatabasePostgres({ user, password, host, port, database })
+  })
+
+  before(async function () {
+    client = new Sequelize(database, user, password, {
+      logging: false,
+      // logging: (...msg) => console.log(msg)
+      host,
+      port,
+      dialect
     })
-    await store.init()
+    store = new SqlStore({ client })
+    await store.init({ alter: true })
     await store.clear()
   })
-  after(async function () {
-    await client.close()
+  after(function () {
+    client.close()
   })
 
   it('shall store session', async function () {
@@ -53,7 +77,7 @@ describeBool(isDockerRunning('mongo'))('MongoStore', function () {
   })
 
   it('shall destroy expired session', async function () {
-    this.timeout(4000)
+    this.timeout(4000e3)
     const req = {}
     const data = { test: 'expires' }
     const session = new Session(req, { data, expires: 1 })

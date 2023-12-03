@@ -12,6 +12,7 @@ rules:
     - error
     - varsIgnorePattern: '^_$'
       argsIgnorePattern: '^_'
+      destructuredArrayIgnorePattern: '^_'
   space-before-function-paren:
     - error
     - anonymous: always

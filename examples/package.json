@@ -1,0 +1,10 @@
+{
+  "name": "@veloze/session-examples",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Examples of using the @veloze/session package",
+  "type": "module",
+  "dependencies": {
+    "@veloze/session": "link:.."
+  }
+}

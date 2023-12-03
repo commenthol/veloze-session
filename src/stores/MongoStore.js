@@ -1,16 +1,12 @@
-import { MongoClient } from 'mongodb'
 import { now } from '../Session.js'
-import { logger } from '../utils/index.js'
 
 /**
- * @typedef {import('mongodb').MongoClientOptions} MongoClientOptions
+ * @typedef {import('mongodb').MongoClient} MongoClient
  */ /**
  * @typedef {import('../Session.js').Session} Session
  */ /**
  * @typedef {import('../types.js').Store} Store
  */
-
-const log = logger(':MongoStore')
 
 /**
  * @extends {Store}
@@ -20,37 +16,28 @@ export class MongoStore {
    * Creates a new MongoDB store.
    *
    * @param {{
+   *  database: string
    *  collection?: string
-   *  client?: MongoClient
-   *  url?: string
-   *  [prop: string]: any
+   *  client: MongoClient
    * }} opts store options
+   * - database: database name where sessions are stored
    * - collection: collection name in database default='sessions'
-   * - collection: collection name in database default='sessions'
-   * - client: optional mongo client instance (all other options are ignored)
-   * - url: mongo db connection string
-   * - [prop] {MongoClientOptions}: additional options for mongo client
+   * - client: mongo client instance
    */
   constructor(opts) {
     const {
       database,
       collection = 'sessions',
-      client,
-      url = '',
-      /** @type {MongoClientOptions} */
-      ...mongoOpts
+      client
     } = opts || {}
 
-    this._client =
-      client ||
-      new MongoClient(url, mongoOpts)
+    this._client = client
     this._model = this._client.db(database).collection(collection)
-    this.init().catch((err) => {
-      log.fatal(err)
-      process.exit(1)
-    })
   }
 
+  /**
+   * Initialize store
+   */
   async init() {
     await this._model.createIndex({ id: 1 }, { background: true, unique: true })
     await this._model.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 })

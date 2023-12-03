@@ -33,6 +33,9 @@
     "./RedisStore": {
       "import": "./src/stores/RedisStore.js"
     },
+    "./SqlStore": {
+      "import": "./src/stores/SqlStore.js"
+    },
     "./types": "./types",
     "./package.json": "./package.json"
   },
@@ -56,6 +59,7 @@
     "veloze": "^0.7.0"
   },
   "devDependencies": {
+    "@commenthol/dotconfig": "^1.0.0",
     "@types/node": "^20.10.1",
     "c8": "^8.0.1",
     "eslint": "^8.54.0",
@@ -67,6 +71,8 @@
     "mocha": "^10.2.0",
     "mongodb": "^6.3.0",
     "npm-run-all2": "^6.1.1",
+    "pg": "^8.11.3",
+    "sequelize": "^6.35.1",
     "sinon": "^17.0.1",
     "supertest": "^6.3.3",
     "typescript": "^5.3.2"

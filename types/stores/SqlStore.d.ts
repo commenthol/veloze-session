@@ -1,5 +1,5 @@
 /**
- * @typedef {import('mongodb').MongoClient} MongoClient
+ * @typedef {import('sequelize').Sequelize} Sequelize
  */ /**
 * @typedef {import('../Session.js').Session} Session
 */ /**
@@ -8,34 +8,36 @@
 /**
  * @extends {Store}
  */
-export class MongoStore {
+export class SqlStore {
     /**
      * Creates a new MongoDB store.
      *
      * @param {{
-     *  database: string
-     *  collection?: string
-     *  client: MongoClient
+     *  client: Sequelize
+     *  tableName?: string
      * }} opts store options
-     * - database: database name where sessions are stored
-     * - collection: collection name in database default='sessions'
-     * - client: mongo client instance
+     * - client: sequelize client instance
+     * - tableName: table name in database default='sessions'
      */
     constructor(opts: {
-        database: string;
-        collection?: string | undefined;
-        client: MongoClient;
+        client: Sequelize;
+        tableName?: string | undefined;
     });
-    _client: import("mongodb").MongoClient;
-    _model: import("mongodb").Collection<import("mongodb").Document>;
+    options: {
+        client: import("sequelize").Sequelize;
+        tableName: string;
+    };
+    _model: {};
     /**
      * Initialize store
+     * @param {{ force?: boolean, alter?: boolean }} [opts] init options
+     * - force: force creating table if not exists; default=false
+     * - alter: alter table if exists; default=false
      */
-    init(): Promise<void>;
-    /**
-     * @returns {Promise<void>}
-     */
-    close(): Promise<void>;
+    init(opts?: {
+        force?: boolean | undefined;
+        alter?: boolean | undefined;
+    } | undefined): Promise<void>;
     /**
      * Store session with sessionId in store
      * @param {Session} session
@@ -63,6 +65,6 @@ export class MongoStore {
      */
     clear(): Promise<void>;
 }
-export type MongoClient = import('mongodb').MongoClient;
+export type Sequelize = import('sequelize').Sequelize;
 export type Session = import('../Session.js').Session;
 export type Store = import('../types.js').Store;

@@ -1,7 +1,7 @@
 import assert from 'assert'
 import { RedisStore } from '../src/stores/RedisStore.js'
 import { Session } from '../src/Session.js'
-import { nap, isDockerRunning, describeBool } from './helper.js'
+import { nap, isDockerRunning, describeBool } from './support/helper.js'
 import Redis from 'ioredis'
 
 describeBool(isDockerRunning('redis'))('RedisStore', function () {
