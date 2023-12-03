@@ -25,17 +25,20 @@ const log = logger()
  *  name?: string
  *  cookieOpts?: CookieOpts
  *  extendExpiry?: boolean
+ *  initialData?: object
  *  secrets?: {
  *    kid: string
  *    secret: string
  *  }[]
+ *  randomId?: () => string
  * }} opts
  * @returns {import('veloze/types/types.js').Handler}
  * - store: session store
- * - maxAge: session expiration
+ * - expires: session expiration
  * - name: session cookie name
  * - cookieOpts: cookie options
- * - extendExpiry: extend expiry on every request
+ * - extendExpiry: if `true` extend expiry on every request
+ * - initialData: initial session data (if no session found)
  * - secrets[].secret: signing secrets; 1st used to sign, all others to verify
  * - secrets[].kid: keyId to identify the secret from the JWT header
  */
@@ -46,12 +49,16 @@ export function session(opts) {
     name = 'session',
     secrets = [],
     cookieOpts = {},
-    extendExpiry = false
+    initialData = null,
+    extendExpiry = false,
+    randomId
   } = opts || {}
 
   const _cookieOpts = { sameSite: 'Strict', ...cookieOpts, httpOnly: true }
   // defaults to cookie store
-  const store = _store || new CookieStore({ expires, name, secrets })
+  const store = _store || new CookieStore({ secrets })
+
+  const isCookieStore = store instanceof CookieStore
 
   return async function sessionMw(req, res, next) {
     let err = null
@@ -59,18 +66,22 @@ export function session(opts) {
     try {
       _cookieOpts.secure = _cookieOpts.secure ?? isHttpsProto(req)
 
-      const sessionId =
-        store instanceof CookieStore ? undefined : req.cookies[name]
-      let session = new Session(req, { name, sessionId })
+      const sessionId = isCookieStore ? undefined : req.cookies[name]
+      const session = new Session(req, {
+        name,
+        expires,
+        sessionId,
+        initialData,
+        randomId
+      })
+      const currentCookie = session.getCookie()
 
-      const freshData = await store.get(session)
-      session.assign(freshData)
-
-      if (!freshData) {
-        // sessionId may be fake, if no data found reset session
-        session = new Session(req, { name })
-      } else if (session.isExpired()) {
-        await store.destroy(session)
+      if (sessionId || isCookieStore) {
+        const freshData = await store.get(session)
+        if (!session.assign(freshData)) {
+          // sessionId may be fake, so destroy it
+          session.destroy()
+        }
       }
 
       req.session = session.sessionData(store)
@@ -81,15 +92,19 @@ export function session(opts) {
       onWriteHead(res, () => {
         // all must be synchronous calls!
         if (session.hasChanged) {
-          if (session.needsSave) {
-            // try to store session
-            store.set(session).catch(log.error)
-          }
-          if (session.cookie) {
-            setCookie(res, name, session.cookie, _cookieOpts)
-          } else {
+          // try to store session
+          log.debug('saving session id=%s exp=%s data=%j', session.id, session.exp, session.data)
+          store.set(session).catch(log.error)
+        }
+        if (!session.cookie) {
+          if (currentCookie) {
+            // only destroy if there was a cookie before
+            log.debug('destroying session id=%s', session.id)
             clearCookie(res, name, _cookieOpts)
           }
+        } else if (session.cookie !== currentCookie && !session.isEmpty()) {
+          log.debug('set cookie=%s', session.cookie)
+          setCookie(res, name, session.cookie, _cookieOpts)
         }
       })
     } catch (e) {

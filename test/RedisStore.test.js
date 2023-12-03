@@ -26,8 +26,8 @@ describeBool(isDockerRunning('redis'))('RedisStore', function () {
 
   it('shall store session', async function () {
     const req = {}
-    const data = { user: 'test' }
-    const session = new Session(req, { data, sessionId: 'abc', expires: 1 })
+    const session = new Session(req, { sessionId: 'abc', expires: 1 })
+    session.set({ user: 'test' })
     await store.set(session)
     assert.deepEqual(session.data, {
       user: 'test'
@@ -52,10 +52,17 @@ describeBool(isDockerRunning('redis'))('RedisStore', function () {
 
   it('shall destroy expired session', async function () {
     this.timeout(4000)
-    await nap(2000)
     const req = {}
-    const session = new Session(req)
-    session.id = 'abc'
+    const session = new Session(req, { expires: 1 })
+    session.set({ test: 'expires' })
+    session.id = 'expires'
+    await store.set(session)
+    await nap(100)
+    {
+      const payload = await store.get(session)
+      assert.notEqual(payload, null)
+    }
+    await nap(2000)
     const payload = await store.get(session)
     assert.equal(payload, null)
   })
@@ -75,7 +82,8 @@ describeBool(isDockerRunning('redis'))('RedisStore', function () {
   it('shall clear all sessions', async function () {
     const req = {}
     for (let i = 0; i < 10; i++) {
-      const session = new Session(req, { data: { i } })
+      const session = new Session(req)
+      session.set({ i })
       await store.set(session)
     }
     {

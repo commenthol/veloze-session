@@ -1,8 +1,6 @@
 /**
  * @typedef {import('sequelize').Sequelize} Sequelize
  */ /**
-* @typedef {import('../Session.js').Session} Session
-*/ /**
 * @typedef {import('../types.js').Store} Store
 */
 /**
@@ -66,5 +64,5 @@ export class SqlStore {
     clear(): Promise<void>;
 }
 export type Sequelize = import('sequelize').Sequelize;
-export type Session = import('../Session.js').Session;
 export type Store = import('../types.js').Store;
+import { Session } from '../Session.js';

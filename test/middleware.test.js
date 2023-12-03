@@ -40,7 +40,11 @@ describe('session middleware', function () {
     })
 
     it('existing session', async function () {
-      assert.ok(cookie, 'needs cookie from previous test')
+      const { headers } = await supertest(app)
+        .get('/memory')
+        .query({ hello: 'world' })
+        .expect({ session: { hello: 'world' } })
+      cookie = utils.cookieParse(headers['set-cookie'][0])
       await supertest(app)
         .get('/memory')
         .set({ cookie: `session=${cookie.session}` })
@@ -63,13 +67,14 @@ describe('session middleware', function () {
             { session: true, Path: '/', HttpOnly: true, SameSite: 'Strict' }
           ])
         )
-        .then(({ headers }) => {
-          cookie = utils.cookieParse(headers['set-cookie'][0])
-        })
     })
 
     it('existing session', async function () {
-      assert.ok(cookie, 'needs cookie from previous test')
+      const { headers } = await supertest(app)
+        .get('/cookie')
+        .query({ hello: 'world' })
+        .expect({ session: { hello: 'world' } })
+      cookie = utils.cookieParse(headers['set-cookie'][0])
       await supertest(app)
         .get('/cookie')
         .set({ cookie: `session=${cookie.session}` })

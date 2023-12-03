@@ -1,4 +1,4 @@
-import assert from 'assert'
+import { equal, deepEqual } from 'assert/strict'
 import sinon from 'sinon'
 import { MemoryStore } from '../src/stores/MemoryStore.js'
 import { Session } from '../src/Session.js'
@@ -19,11 +19,11 @@ describe('MemoryStore', function () {
 
   it('shall store session', async function () {
     const req = {}
-    const data = { user: 'test' }
-    const session = new Session(req, { data, sessionId: 'abcdef' })
+    const session = new Session(req, { sessionId: 'abcdef' })
+    session.set({ user: 'test' })
     session.id = 'abc'
     await store.set(session)
-    assert.deepEqual(session.data, {
+    deepEqual(session.data, {
       user: 'test'
     })
   })
@@ -33,10 +33,10 @@ describe('MemoryStore', function () {
     const session = new Session(req)
     session.id = 'abc'
     const { data, iat, exp, id } = await store.get(session)
-    assert.deepEqual(data, { user: 'test' })
-    assert.equal(iat, 1672531200)
-    assert.equal(exp, 1672574400)
-    assert.equal(typeof id, 'undefined') // shall not contain id
+    deepEqual(data, { user: 'test' })
+    equal(iat, 1672531200)
+    equal(exp, 1672574400)
+    equal(typeof id, 'undefined') // shall not contain id
   })
 
   it('shall obtain expired session', async function () {
@@ -45,7 +45,6 @@ describe('MemoryStore', function () {
     const session = new Session(req)
     session.id = 'abc'
     const payload = await store.get(session)
-    session.assign(payload)
-    assert.equal(session.isExpired(), true)
+    equal(session.assign(payload), false)
   })
 })

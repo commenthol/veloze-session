@@ -36,7 +36,10 @@ export class RedisStore {
    * @param {Session} session
    */
   async set(session) {
-    session.setExpired()
+    if (session.isEmpty()) {
+      await this.destroy(session)
+      return
+    }
     const { id, iat, exp, data } = session
     await this._redis
       .pipeline()

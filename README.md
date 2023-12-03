@@ -11,19 +11,19 @@ Comes packed with a
 - Cookie store as default (uses [HS256 JWT](https://jwt.io))
 - Memory store (not for production)
 - Redis store (using [ioredis](https://www.npmjs.com/package/ioredis))
+- SQL store (using [sequelize](https://www.npmjs.com/package/sequelize))
+
 
 **Table of Contents**
 
 <!-- !toc -->
 
-* [@veloze/session](#velozesession)
 * [Usage](#usage)
   * [MemoryStore](#memorystore)
   * [RedisStore](#redisstore)
   * [MongoStore](#mongostore)
   * [SqlStore](#sqlstore)
-* [for postgres](#for-postgres)
-* [for mariadb, mysql](#for-mariadb-mysql)
+* [API](#api)
 * [License](#license)
 
 <!-- toc! -->
@@ -78,9 +78,11 @@ Using Memory store
 
 > **Note:** Do not use in production.
 
+See `./examples/memorystore.js`
+
 <!-- include (./examples/memorystore.js lang=js) -->
 ```js
-import { Server, cookieParser, send, response } from 'veloze'
+import { Server, send, queryParser, cookieParser, response } from 'veloze'
 import { session, MemoryStore } from '@veloze/session'
 import { view } from './view.js'
 
@@ -88,28 +90,19 @@ const store = new MemoryStore()
 
 const app = new Server({ onlyHTTP1: true })
 
-app.use(send, cookieParser, session({ store }))
+app.use(
+  send,
+  queryParser,
+  cookieParser,
+  // attach session middleware with store
+  session({
+    store,
+    expires: 10,
+    initialData: { visits: 0 }
+  })
+)
 
-app.get('/favicon.ico', (req, res) => res.end())
-
-app.get('/', (req, res) => {
-  req.session.set({ visits: 0 })
-  response.redirect(res, '/visits')
-})
-
-app.get('/visits', (req, res) => {
-  req.session.visits++
-  res.send(
-    view({
-      title: 'MemoryStore',
-      body: `
-        <p style="border: 1px solid red; color: red;">Do not use MemoryStore in production!</p>
-        <p>You have visited this page ${req.session.visits} times</p>`
-    })
-  )
-})
-
-app.listen(3000)
+//...
 ```
 <!-- /include -->
 
@@ -122,8 +115,46 @@ Use Redis as session storage
 > npm i ioredis
 > ```
 
-include (./examples/redisstore.js lang=js)
+See `./examples/redisstore.js`
 
+<!-- include (./examples/redisstore.js lang=js) -->
+```js
+import { Server, send, queryParser, cookieParser, response } from 'veloze'
+import { session } from '@veloze/session'
+import { view } from './view.js'
+
+// import redis driver and store
+import Redis from 'ioredis'
+import { RedisStore } from '@veloze/session/RedisStore'
+
+// create redis client
+const client = new Redis({
+  host: '127.0.0.1',
+  port: 6379
+  // username: '',
+  // password: '',
+  // db: 0,
+  // keyPrefix: 'session:',
+})
+const store = new RedisStore({ client })
+
+const app = new Server({ onlyHTTP1: true })
+
+app.use(
+  send,
+  queryParser,
+  cookieParser,
+  // attach session middleware with store
+  session({
+    store,
+    expires: 10,
+    initialData: { visits: 0 }
+  })
+)
+
+//...
+```
+<!-- /include -->
 
 ## MongoStore
 
@@ -134,9 +165,11 @@ Use MongoDB as session storage
 > npm i mongodb
 > ```
 
+See `./examples/mongostore.js`
+
 <!-- include (./examples/mongostore.js lang=js) -->
 ```js
-import { Server, cookieParser, send, response } from 'veloze'
+import { Server, send, queryParser, cookieParser, response } from 'veloze'
 import { session } from '@veloze/session'
 import { view } from './view.js'
 
@@ -150,27 +183,20 @@ const store = new MongoStore({ client })
 
 const app = new Server({ onlyHTTP1: true })
 
-// attach session middleware with store
-app.use(send, cookieParser, session({ store, data: { visits: 0 } }))
+app.use(
+  send,
+  queryParser,
+  cookieParser,
+  // attach session middleware with store
+  session({
+    store,
+    expires: 10,
+    // extendExpiry: true,
+    initialData: { visits: 0 }
+  })
+)
 
-app.get('/favicon.ico', (req, res) => res.end())
-
-app.get('/', (req, res) => {
-  req.session.set({ visits: 0 })
-  response.redirect(res, '/visits')
-})
-
-app.get('/visits', (req, res) => {
-  req.session.visits++
-  res.send(
-    view({
-      title: 'MongoStore',
-      body: `<p>You have visited this page ${req.session.visits} times</p>`
-    })
-  )
-})
-
-app.listen(3000)
+//...
 ```
 <!-- /include -->
 
@@ -186,9 +212,11 @@ Use Sequelize to connect to your favorite SQL Database
 > npm i mysql2
 > ```
 
+See `./examples/postgresstore.js`
+
 <!-- include (./examples/postgresstore.js lang=js) -->
 ```js
-import { Server, cookieParser, send, response } from 'veloze'
+import { Server, send, queryParser, cookieParser, response } from 'veloze'
 import { session } from '@veloze/session'
 import { view } from './view.js'
 
@@ -219,29 +247,69 @@ await store.init({ alter: true })
 
 const app = new Server({ onlyHTTP1: true })
 
-// attach session middleware with store
-app.use(send, cookieParser, session({ store, data: { visits: 0 } }))
+app.use(
+  send,
+  queryParser,
+  cookieParser,
+  // attach session middleware with store
+  session({
+    store,
+    expires: 10,
+    // extendExpiry: true,
+    initialData: { visits: 0 }
+  })
+)
 
-app.get('/favicon.ico', (req, res) => res.end())
-
-app.get('/', (req, res) => {
-  req.session.set({ visits: 0 })
-  response.redirect(res, '/visits')
-})
-
-app.get('/visits', (req, res) => {
-  req.session.visits++
-  res.send(
-    view({
-      title: 'SqlStore (postgres)',
-      body: `<p>You have visited this page ${req.session.visits} times</p>`
-    })
-  )
-})
-
-app.listen(3000)
+//...
 ```
 <!-- /include -->
+
+# API
+
+## Session Middleware
+
+```ts
+ function session(opts: {
+    /** 
+     * session store 
+     * @default CookieStore
+     */
+    store?: import("./types").Store | undefined;
+    /**
+     * session expiration
+     * @default '12 hours'
+     */
+    expires?: string | number | undefined;
+    /**
+     * session cookie name
+     * @default 'session'
+     */
+    name?: string | undefined;
+    /**
+     * Cookie options
+     */
+    cookieOpts?: import("veloze/types/types.js").CookieOpts | undefined;
+    /**
+     * if `true` extend expiry on every request
+     * @default false
+     */
+    extendExpiry?: boolean | undefined;
+    /**
+     * initial session data (if no session found)
+     */
+    initialData?: object;
+    /**
+     * signing secrets; 1st used to sign, all others to verify;
+     * only required if using default CookieStore
+     */
+    secrets?: {
+        kid: string;
+        secret: string;
+    }[] | undefined;
+    randomId?: (() => string) | undefined;
+}): Promise<(req, res, next) => void>;
+```
+
 
 # License
 

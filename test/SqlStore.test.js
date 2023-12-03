@@ -52,8 +52,8 @@ describeBool(isDockerRunning('postgres'))('SqlStore', function () {
 
   it('shall store session', async function () {
     const req = {}
-    const data = { user: 'test' }
-    const session = new Session(req, { data, sessionId: 'abc', expires: 1 })
+    const session = new Session(req, { sessionId: 'abc', expires: 1 })
+    session.set({ user: 'test' })
     await store.set(session)
     assert.deepEqual(session.data, {
       user: 'test'
@@ -77,10 +77,10 @@ describeBool(isDockerRunning('postgres'))('SqlStore', function () {
   })
 
   it('shall destroy expired session', async function () {
-    this.timeout(4000e3)
+    this.timeout(4000)
     const req = {}
-    const data = { test: 'expires' }
-    const session = new Session(req, { data, expires: 1 })
+    const session = new Session(req, { expires: 1 })
+    session.set({ test: 'expires' })
     session.id = 'expires'
     await store.set(session)
     await nap(100)
@@ -109,7 +109,8 @@ describeBool(isDockerRunning('postgres'))('SqlStore', function () {
     await store.clear()
     const req = {}
     for (let i = 0; i < 10; i++) {
-      const session = new Session(req, { data: { i } })
+      const session = new Session(req)
+      session.set({ i })
       await store.set(session)
     }
     {

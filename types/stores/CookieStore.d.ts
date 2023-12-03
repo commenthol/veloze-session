@@ -23,26 +23,20 @@ export class CookieStore {
      * - nginx: 4kB
      *
      * @param {{
-     *  name: string
      *  secrets: {
      *    kid: string
      *    secret: string
      *  }[]
-     *  expires?: string|number
      * }} opts
      *
-     * - expires: if string then human time, e.g. 2hours, or if number seconds
-     * - name: cookie name
      * - secrets[].secret: signing secrets; 1st used to sign, all others to verify
      * - secrets[].kid: keyId to identify the secret from the JWT header
      */
     constructor(opts: {
-        name: string;
         secrets: {
             kid: string;
             secret: string;
         }[];
-        expires?: string | number | undefined;
     });
     _kid: string | undefined;
     _secret: Uint8Array;

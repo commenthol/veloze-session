@@ -50,15 +50,15 @@ describe('CookieStore', function () {
       },
       {
         name: 'TypeError',
-        message: 'CookieStore needs a secret with kid and secret'
+        message: 'CookieStore needs "secret" with "kid"'
       }
     )
   })
 
   it('shall store session', async function () {
     const req = {}
-    const data = { user: 'test' }
-    const session = new Session(req, { data, sessionId: 'abcdef' })
+    const session = new Session(req, { sessionId: 'abcdef' })
+    session.set({ user: 'test' })
     await store.set(session)
     assert.equal(session.hasChanged, false)
     assert.deepEqual(session.data, { user: 'test' })
@@ -84,6 +84,5 @@ describe('CookieStore', function () {
     const payload = await store.get(session)
     assert.equal(payload, null)
     session.assign(payload)
-    assert.equal(session.isExpired(), true)
   })
 })

@@ -1,11 +1,9 @@
 import { DataTypes } from 'sequelize'
-import { now } from '../Session.js'
+import { Session } from '../Session.js'
 
 /**
  * @typedef {import('sequelize').Sequelize} Sequelize
- */ /**
- * @typedef {import('../Session.js').Session} Session
- */ /**
+ *//**
  * @typedef {import('../types.js').Store} Store
  */
 
@@ -72,7 +70,7 @@ export class SqlStore {
    * @param {Session} session
    */
   async set(session) {
-    if (!Object.keys(session.data || {}).length) {
+    if (session.isEmpty()) {
       await this.destroy(session)
       return
     }
@@ -103,7 +101,7 @@ export class SqlStore {
     const data = payload.data
     const iat = Number(payload.iat)
     const exp = Number(payload.exp)
-    if (exp < now()) {
+    if (Session.isExpired(exp)) {
       await this.destroy(session)
       return null
     }

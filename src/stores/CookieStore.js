@@ -26,16 +26,12 @@ export class CookieStore {
    * - nginx: 4kB
    *
    * @param {{
-   *  name: string
    *  secrets: {
    *    kid: string
    *    secret: string
    *  }[]
-   *  expires?: string|number
    * }} opts
    *
-   * - expires: if string then human time, e.g. 2hours, or if number seconds
-   * - name: cookie name
    * - secrets[].secret: signing secrets; 1st used to sign, all others to verify
    * - secrets[].kid: keyId to identify the secret from the JWT header
    */
@@ -53,7 +49,7 @@ export class CookieStore {
 
     for (const { kid, secret } of secrets) {
       if (!kid || !secret) {
-        throw TypeError('CookieStore needs a secret with kid and secret')
+        throw TypeError('CookieStore needs "secret" with "kid"')
       }
       const secretUint8 = new TextEncoder().encode(secret)
       this._kids[kid] = secretUint8
@@ -69,7 +65,7 @@ export class CookieStore {
    * @param {Session} session
    */
   async set(session) {
-    if (!Object.keys(session.data || {}).length) {
+    if (session.isEmpty()) {
       await this.destroy(session)
       return
     }
@@ -89,6 +85,7 @@ export class CookieStore {
    * @returns {Promise<object|null>}
    */
   async get(session) {
+    session.cookie = ''
     const jwt = session.getCookie()
     if (!jwt) return null
 
@@ -102,9 +99,11 @@ export class CookieStore {
     try {
       isValid = verifySignature(decoded, { secret })
     } catch (e) {
-      // ignore error
+      // if expired verifySignature will throw
     }
     if (!isValid) return null
+
+    session.cookie = jwt
 
     const { sid, iat, exp, ...data } = payload
     if (!sid) return null

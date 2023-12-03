@@ -1,5 +1,7 @@
 export function now(): number;
 export class Session {
+    static now(): number;
+    static isExpired(exp: any): boolean;
     /**
      * @param {Request} req request object
      * @param {{
@@ -7,28 +9,29 @@ export class Session {
      *  sessionId?: string
      *  expires?: string|number
      *  randomId?: () => string
-     *  data?: object
+     *  initialData?: object
      * }} [opts] session options
      * - opts.name: session cookie name (@default 'session')
      * - opts.sessionId: session id
      * - opts.expires: session expiration (@default '12h')
      * - opts.randomId: function to generate session id (@default veloze.utils.random64)
-     * - opts.data: initial session data
+     * - opts.initialData: initial or default session data
      */
     constructor(req: Request, opts?: {
         name?: string | undefined;
         sessionId?: string | undefined;
         expires?: string | number | undefined;
         randomId?: (() => string) | undefined;
-        data?: object;
+        initialData?: object;
     } | undefined);
     name: string;
     req: Request;
+    _randomId: typeof veloze.utils.random64;
     id: string;
     cookie: string;
-    data: any;
+    data: {};
+    initialData: any;
     hasChanged: boolean;
-    needsSave: boolean;
     /** @type {number|undefined} allow setting different expiry */
     expires: number | undefined;
     getCookie(): any;
@@ -37,25 +40,48 @@ export class Session {
      * @returns {boolean} successful set
      */
     set(data?: object): boolean;
-    assign(freshData: any): void;
-    exp: any;
+    /**
+     * assign fresh data from store to session
+     * @param {{
+     *  id?: string
+     *  iat?: number
+     *  exp?: number
+     *  data?: object
+     * }|null} freshData
+     */
+    assign(freshData: {
+        id?: string | undefined;
+        iat?: number | undefined;
+        exp?: number | undefined;
+        data?: object;
+    } | null): boolean;
     iat: any;
+    exp: any;
     /**
      * destroys the session data
      */
     destroy(): void;
     /**
-     * the session request data
-     * @returns {object}
+     * resets the session id; leaves the data intact
      */
-    sessionData(store: any): object;
+    resetId(): void;
+    /**
+     * the session request data
+     * @returns {Proxy}
+     */
+    sessionData(store: any): ProxyConstructor;
+    /**
+     * @returns {boolean} true if empty
+     */
+    isEmpty(): boolean;
     /**
      * sets expiry
      */
-    setExpired(): void;
+    setExpiry(): void;
     /**
      * @returns {boolean} true if expired
      */
     isExpired(): boolean;
     extendExpiry(): void;
 }
+import * as veloze from 'veloze';

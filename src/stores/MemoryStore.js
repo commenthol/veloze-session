@@ -23,7 +23,7 @@ export class MemoryStore {
    * @param {Session} session
    */
   async set(session) {
-    if (!Object.keys(session.data || {}).length) {
+    if (session.isEmpty()) {
       await this.destroy(session)
       return
     }

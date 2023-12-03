@@ -44,12 +44,13 @@
     "changelog": "conv-changelog -t groups -o",
     "ci": "CI=true npm-run-all lint coverage types",
     "coverage": "c8 -r html -r text npm t",
+    "docs": "markedpp -s -i README.md",
     "dc": "docker-compose -f ./scripts/docker-compose.yaml",
     "dc:down": "npm run dc -- down",
     "dc:up": "npm run dc -- up -d",
     "lint": "eslint --ext js . --fix",
     "test": "mocha",
-    "types": "rm -rf types; tsc"
+    "types": "rm -rf types; tsc && cp -r src/*.d.ts types/"
   },
   "mocha": {
     "recursive": true
@@ -78,7 +79,6 @@
     "typescript": "^5.3.2"
   },
   "peerDependencies": {
-    "ioredis": "^5.3.2"
   },
   "engines": {
     "node": ">=18"

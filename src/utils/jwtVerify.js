@@ -1,8 +1,14 @@
 import * as crypto from 'crypto'
 
+const safeJsonParse = (obj) => {
+  try {
+    return JSON.parse(obj)
+  } catch (e) {
+  }
+}
 const toBuffer = (base64 = '') => Buffer.from(base64, 'base64url')
 const parse = (buffer) => {
-  const parsed = JSON.parse(buffer || 'null')
+  const parsed = safeJsonParse(buffer || 'null')
   return parsed && typeof parsed === 'object' ? parsed : null
 }
 

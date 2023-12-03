@@ -5,10 +5,19 @@ const EXTEND_EXPIRY = 'extendExpiry'
 const DESTROY = 'destroy'
 const SAVE = 'save'
 const SET = 'set'
+const RESET_ID = 'resetId'
 
 export const now = () => Math.floor(Date.now() / 1000)
 
 export class Session {
+  static now() {
+    return now()
+  }
+
+  static isExpired(exp) {
+    return typeof exp !== 'number' || isNaN(exp) || exp < now()
+  }
+
   /**
    * @param {Request} req request object
    * @param {{
@@ -16,13 +25,13 @@ export class Session {
    *  sessionId?: string
    *  expires?: string|number
    *  randomId?: () => string
-   *  data?: object
+   *  initialData?: object
    * }} [opts] session options
    * - opts.name: session cookie name (@default 'session')
    * - opts.sessionId: session id
    * - opts.expires: session expiration (@default '12h')
    * - opts.randomId: function to generate session id (@default veloze.utils.random64)
-   * - opts.data: initial session data
+   * - opts.initialData: initial or default session data
    */
   constructor(req, opts) {
     const {
@@ -30,22 +39,23 @@ export class Session {
       sessionId,
       expires = '12h',
       randomId = random64,
-      data
+      initialData
     } = opts || {}
     // ts type defs
     this.name = name
     this.req = req
-    this.id = sessionId || randomId()
+    this._randomId = randomId
+    this.id = sessionId || this._randomId()
     this.cookie = this.id
-    this.data = data || {}
+    this.data = {}
+    this.initialData = initialData || {}
     this.hasChanged = false
-    this.needsSave = true
     /** @type {number|undefined} allow setting different expiry */
     this.expires =
       typeof expires === 'number'
         ? ms(expires + 's', true)
         : ms(expires, true) || ms('12h', true)
-    this.setExpired()
+    this.setExpiry()
   }
 
   getCookie() {
@@ -73,17 +83,31 @@ export class Session {
     return true
   }
 
+  /**
+   * assign fresh data from store to session
+   * @param {{
+   *  id?: string
+   *  iat?: number
+   *  exp?: number
+   *  data?: object
+   * }|null} freshData
+   */
   assign(freshData) {
     if (!freshData || typeof freshData !== 'object') {
-      this.exp = now() - 60
-      return
+      return false
     }
 
     const { id, iat, exp, data } = freshData
+    if (!exp || !isInteger(exp) || exp < now()) {
+      return false
+    }
+
     if (id) this.id = id
-    this.iat = iat
-    this.exp = exp
+    if (isInteger(iat)) this.iat = iat
+    if (isInteger(exp)) this.exp = exp
     this.set(data)
+    this.hasChanged = false
+    return true
   }
 
   /**
@@ -92,14 +116,22 @@ export class Session {
   destroy() {
     this.set(null)
     // reset cookie and generate a new session id
-    this.id = random64()
+    this.id = this._randomId()
     this.cookie = ''
     this.hasChanged = true
   }
 
   /**
+   * resets the session id; leaves the data intact
+   */
+  resetId() {
+    this.cookie = this.id = this._randomId()
+    this.hasChanged = true
+  }
+
+  /**
    * the session request data
-   * @returns {object}
+   * @returns {Proxy}
    */
   sessionData(store) {
     const that = this
@@ -107,8 +139,10 @@ export class Session {
       get(obj, prop) {
         switch (prop) {
           case DESTROY:
-            return () => {
+            return async () => {
+              await store.destroy(that)
               that.destroy()
+              that.hasChanged = false
             }
           case EXTEND_EXPIRY: {
             return () => {
@@ -118,7 +152,7 @@ export class Session {
           case SAVE:
             return async () => {
               await store.set(that)
-              that.needsSave = false
+              that.hasChanged = false
             }
           case SET:
             return (data) => {
@@ -126,15 +160,22 @@ export class Session {
                 return
               }
               if (data === null) {
-                that.destroy()
+                that.set(null)
                 return
               }
               for (const [prop, value] of Object.entries(data)) {
                 proxy[prop] = value
               }
             }
+          case RESET_ID:
+            return async () => {
+              await store.destroy(that)
+              that.resetId()
+              await store.set(that)
+              that.hasChanged = false
+            }
         }
-        return obj[prop]
+        return obj[prop] ?? that.initialData[prop]
       },
       set(obj, prop, value) {
         switch (prop) {
@@ -142,23 +183,34 @@ export class Session {
           case EXTEND_EXPIRY:
           case SAVE:
           case SET:
+          case RESET_ID:
             return false
         }
         if (JSON.stringify(obj[prop]) !== JSON.stringify(value)) {
+          if (!that.cookie) { // session may have been destroyed previously
+            that.cookie = that.id
+          }
           that.hasChanged = true
-          that.needsSave = true
         }
         obj[prop] = value
         return true
       }
     })
+    // @ts-expect-error
     return proxy
+  }
+
+  /**
+   * @returns {boolean} true if empty
+   */
+  isEmpty() {
+    return !Object.keys(this.data || {}).length
   }
 
   /**
    * sets expiry
    */
-  setExpired() {
+  setExpiry() {
     const { iat, exp, expires = 0 } = this
     this.iat = iat ?? now()
     this.exp = exp ?? now() + expires
@@ -177,3 +229,5 @@ export class Session {
     this.exp = now() + expires
   }
 }
+
+const isInteger = (n) => typeof n === 'number' && Number.isInteger(n)
