@@ -2,15 +2,26 @@ import assert from 'assert'
 import { RedisStore } from '../src/stores/RedisStore.js'
 import { Session } from '../src/Session.js'
 import { nap, isDockerRunning, describeBool } from './helper.js'
+import Redis from 'ioredis'
 
 describeBool(isDockerRunning('redis'))('RedisStore', function () {
   let store
+  let client
   before(async function () {
-    store = new RedisStore()
+    client = new Redis({
+      host: '127.0.0.1',
+      port: 6379
+      // db: 0
+      // keyPrefix: 'session:'
+      // username: '',
+      // password: '',
+    })
+
+    store = new RedisStore({ client })
     await store.clear()
   })
   after(function () {
-    store.close()
+    client.disconnect()
   })
 
   it('shall store session', async function () {
