@@ -1,9 +1,9 @@
 import assert from 'assert'
 import { RedisStore } from '../src/stores/RedisStore.js'
 import { Session } from '../src/Session.js'
-import { nap } from './helper.js'
+import { nap, isDockerRunning, describeBool } from './helper.js'
 
-describe('RedisStore', function () {
+describeBool(isDockerRunning('redis'))('RedisStore', function () {
   let store
   before(async function () {
     store = new RedisStore()

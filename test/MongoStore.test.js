@@ -1,9 +1,9 @@
 import assert from 'assert'
 import { MongoStore } from '../src/stores/MongoStore.js'
 import { Session } from '../src/Session.js'
-import { nap } from './helper.js'
+import { nap, isDockerRunning, describeBool } from './helper.js'
 
-describe('MongoStore', function () {
+describeBool(isDockerRunning('mongo'))('MongoStore', function () {
   let store
   before(async function () {
     store = new MongoStore({
