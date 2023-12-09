@@ -66,8 +66,21 @@ app.use(
   async (req, res) => {
     // get session data
     const data = req.session
-    // save the session
+    // change or add properties
+    data.username = 'alice'
+
+    // set session data with an object
+    req.session.set({ visits: 1, follows: ['bob'] })
+
+    // explicitly save the session
+    // session is also automatically saved before writing response headers
     await req.session.save()
+
+    // reset session id, but maintain session data
+    await req.session.resetId()
+
+    // destroy the session
+    await req.session.destroy()
   }
 )
 ```
@@ -310,6 +323,24 @@ app.use(
 }): Promise<(req, res, next) => void>;
 ```
 
+## Request Session Object 
+
+```ts
+export interface ReqSession {
+  /** set session data object */
+  set(data: object): void
+  /** extend the expiry time of the session */
+  extendExpiry(): void
+  /** renew the session Id */
+  resetId(): Promise<void>
+  /** explicitly save the session */
+  save(): Promise<void>
+  /** destroy the session */
+  destroy(): Promise<void>
+  /** set, get property on session object */
+  [property: string]: any
+}
+```
 
 # License
 
