@@ -41,7 +41,7 @@
   },
   "scripts": {
     "all": "npm-run-all lint coverage types",
-    "changelog": "conv-changelog -t groups -o",
+    "changelog": "conv-changelog -o",
     "ci": "CI=true npm-run-all lint coverage types",
     "coverage": "c8 -r html -r text npm t",
     "docs": "markedpp -s -i README.md",
