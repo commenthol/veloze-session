@@ -67,9 +67,9 @@ export class Session {
     resetId(): void;
     /**
      * the session request data
-     * @returns {Proxy}
+     * @returns {ReqSession}
      */
-    sessionData(store: any): ProxyConstructor;
+    sessionData(store: any): ReqSession;
     /**
      * @returns {boolean} true if empty
      */
@@ -84,4 +84,5 @@ export class Session {
     isExpired(): boolean;
     extendExpiry(): void;
 }
+export type ReqSession = import('./types').ReqSession;
 import * as veloze from 'veloze';

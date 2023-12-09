@@ -23,10 +23,10 @@
  * }} opts
  * @returns {import('veloze/types/types.js').Handler}
  * - store: session store
- * - maxAge: session expiration
+ * - expires: session expiration
  * - name: session cookie name
  * - cookieOpts: cookie options
- * - extendExpiry: extend expiry on every request
+ * - extendExpiry: if `true` extend expiry on every request
  * - initialData: initial session data (if no session found)
  * - secrets[].secret: signing secrets; 1st used to sign, all others to verify
  * - secrets[].kid: keyId to identify the secret from the JWT header

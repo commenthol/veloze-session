@@ -1,6 +1,10 @@
 import * as veloze from 'veloze'
 const { random64, ms } = veloze.utils
 
+/**
+ * @typedef {import('./types').ReqSession} ReqSession
+ */
+
 const EXTEND_EXPIRY = 'extendExpiry'
 const DESTROY = 'destroy'
 const SAVE = 'save'
@@ -131,7 +135,7 @@ export class Session {
 
   /**
    * the session request data
-   * @returns {Proxy}
+   * @returns {ReqSession}
    */
   sessionData(store) {
     const that = this
@@ -187,7 +191,8 @@ export class Session {
             return false
         }
         if (JSON.stringify(obj[prop]) !== JSON.stringify(value)) {
-          if (!that.cookie) { // session may have been destroyed previously
+          if (!that.cookie) {
+            // session may have been destroyed previously
             that.cookie = that.id
           }
           that.hasChanged = true
