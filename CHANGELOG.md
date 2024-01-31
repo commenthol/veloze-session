@@ -1,3 +1,7 @@
+# 0.2.1 (2024-01-31)
+
+- chore: bump dependencies (#b43028d)
+
 # 0.2.0 (2023-12-09)
 
 - chore: enable github actions (#b1520e2)
