@@ -35,7 +35,7 @@ export function session(opts: {
     store?: import("./types").Store | undefined;
     expires?: string | number | undefined;
     name?: string | undefined;
-    cookieOpts?: import("veloze/types/types.js").CookieOpts | undefined;
+    cookieOpts?: import("veloze/types").CookieOpts | undefined;
     extendExpiry?: boolean | undefined;
     initialData?: object;
     secrets?: {
