@@ -12,8 +12,8 @@ services:
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME:-root}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
   postgres:
     # https://hub.docker.com/_/postgres
@@ -21,8 +21,8 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=example
+      - POSTGRES_USER=${SQLDB_USER:-root}
+      - POSTGRES_PASSWORD=${SQLDB_PASSWORD}
 
   # mariadb:
   #   # https://hub.docker.com/_/mariadb
@@ -30,7 +30,7 @@ services:
   #   ports:
   #     - "3306:3306"
   #   environment:
-  #     - MARIADB_ROOT_PASSWORD=example
+  #     - MARIADB_ROOT_PASSWORD=${SQLDB_PASSWORD}
 
 networks:
   hostnet:

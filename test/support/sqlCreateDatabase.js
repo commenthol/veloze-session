@@ -25,7 +25,7 @@ export async function createDatabaseMariaDb(options) {
   const client = await mariadb.createConnection({ user, password, host, port })
   await client.query(
     `CREATE DATABASE IF NOT EXISTS ${database}` +
-    ' DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_general_ci'
+      ' DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_general_ci'
   )
   client.end()
 }

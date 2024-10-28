@@ -168,7 +168,6 @@ describe('Session', function () {
     req.session.set({ hi: 'name' })
     deepEqual(session.data, { hi: 'name' })
   })
-
   ;['destroy', 'extendExpiry', 'save', 'set'].forEach((prop) => {
     it(`shall not set ${prop}`, function () {
       const req = { url: '/', cookies: {} }

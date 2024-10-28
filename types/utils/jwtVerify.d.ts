@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * @param {string} token
  * @returns {{

@@ -1,0 +1,6 @@
+# cp env .env
+# then add secrets in .env
+MONGO_INITDB_ROOT_USERNAME=root
+MONGO_INITDB_ROOT_PASSWORD=
+SQLDB_USER=root
+SQLDB_PASSWORD=

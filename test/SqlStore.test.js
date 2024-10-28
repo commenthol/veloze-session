@@ -9,9 +9,9 @@ import { SqlStore } from '../src/stores/SqlStore.js'
 
 dotenv.config()
 
-const {
-  SQLDB_USER = 'root',
-  SQLDB_PASSWORD = 'example',
+let {
+  SQLDB_USER,
+  SQLDB_PASSWORD,
   SQLDB_HOST = '127.0.0.01',
   SQLDB_PORT = '5432',
   SQLDB_DATABASE = 'test',
@@ -30,7 +30,13 @@ describeBool(isDockerRunning('postgres'))('SqlStore', function () {
   let client
 
   before(async function () {
-    await createDatabasePostgres({ user, password, host, port, database: 'root' })
+    await createDatabasePostgres({
+      user,
+      password,
+      host,
+      port,
+      database: 'root'
+    })
     await createDatabasePostgres({ user, password, host, port, database })
   })
 

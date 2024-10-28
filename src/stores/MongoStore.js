@@ -25,11 +25,7 @@ export class MongoStore {
    * - client: mongo client instance
    */
   constructor(opts) {
-    const {
-      database,
-      collection = 'sessions',
-      client
-    } = opts || {}
+    const { database, collection = 'sessions', client } = opts || {}
 
     this._client = client
     this._model = this._client.db(database).collection(collection)

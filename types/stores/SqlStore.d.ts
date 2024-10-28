@@ -19,7 +19,7 @@ export class SqlStore {
      */
     constructor(opts: {
         client: Sequelize;
-        tableName?: string | undefined;
+        tableName?: string;
     });
     options: {
         client: import("sequelize").Sequelize;
@@ -33,8 +33,8 @@ export class SqlStore {
      * - alter: alter table if exists; default=false
      */
     init(opts?: {
-        force?: boolean | undefined;
-        alter?: boolean | undefined;
+        force?: boolean;
+        alter?: boolean;
     } | undefined): Promise<void>;
     /**
      * Store session with sessionId in store
@@ -63,6 +63,6 @@ export class SqlStore {
      */
     clear(): Promise<void>;
 }
-export type Sequelize = import('sequelize').Sequelize;
-export type Store = import('../types.js').Store;
+export type Sequelize = import("sequelize").Sequelize;
+export type Store = import("../types.js").Store;
 import { Session } from '../Session.js';

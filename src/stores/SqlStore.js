@@ -78,7 +78,7 @@ export class SqlStore {
     if (!id) return
 
     const where = { id }
-    const [_foundSession, created] = await this._model.findOrCreate({
+    const [_, created] = await this._model.findOrCreate({
       where,
       defaults: { iat, exp, data }
     })

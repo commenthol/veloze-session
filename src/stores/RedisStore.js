@@ -19,9 +19,7 @@ export class RedisStore {
    * - client: redis client instance
    */
   constructor(opts) {
-    const {
-      client
-    } = opts || {}
+    const { client } = opts || {}
 
     if (!client.options.keyPrefix) {
       client.options.keyPrefix = 'session:'

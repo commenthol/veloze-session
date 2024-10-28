@@ -23,7 +23,7 @@ export class MongoStore {
      */
     constructor(opts: {
         database: string;
-        collection?: string | undefined;
+        collection?: string;
         client: MongoClient;
     });
     _client: import("mongodb").MongoClient;
@@ -63,6 +63,6 @@ export class MongoStore {
      */
     clear(): Promise<void>;
 }
-export type MongoClient = import('mongodb').MongoClient;
-export type Session = import('../Session.js').Session;
-export type Store = import('../types.js').Store;
+export type MongoClient = import("mongodb").MongoClient;
+export type Session = import("../Session.js").Session;
+export type Store = import("../types.js").Store;

@@ -102,38 +102,38 @@ const echo = [
 
 export const shouldHaveSetCookieHeader =
   (exp) =>
-    ({ headers }) => {
-      const setCookie = headers['set-cookie']
-      assert.ok(setCookie?.length, 'no set-cookie header found')
-      for (let i = 0; i < exp.length; i++) {
-        const parsed = utils.cookieParse(setCookie[i])
-        Object.entries(exp[i]).forEach(([name, value]) => {
-          if (value === true) {
-            assert.ok(name in parsed, `${name} not in set-cookie[${i}]`)
-          } else if (value === false) {
-            assert.ok(!(name in parsed), `${name} not in set-cookie[${i}]`)
-          } else {
-            assert.equal(parsed[name], value)
-          }
-        })
-      }
-    }
-
-export const shouldHaveHeaders =
-  (exp) =>
-    ({ headers }) => {
-      Object.entries(exp).forEach(([header, value]) => {
-        if (value instanceof RegExp) {
-          assert.ok(
-            value.test(headers[header]),
-          `${header} ${value} !== ${headers[header]}`
-          )
-        } else if (typeof value === 'boolean' && value === true) {
-          assert.ok(header in headers, `${header} : ${headers[header]}`)
-        } else if (typeof value === 'boolean' && value === false) {
-          assert.ok(!(header in headers), `${header} : ${headers[header]}`)
+  ({ headers }) => {
+    const setCookie = headers['set-cookie']
+    assert.ok(setCookie?.length, 'no set-cookie header found')
+    for (let i = 0; i < exp.length; i++) {
+      const parsed = utils.cookieParse(setCookie[i])
+      Object.entries(exp[i]).forEach(([name, value]) => {
+        if (value === true) {
+          assert.ok(name in parsed, `${name} not in set-cookie[${i}]`)
+        } else if (value === false) {
+          assert.ok(!(name in parsed), `${name} not in set-cookie[${i}]`)
         } else {
-          assert.strictEqual(headers[header], value)
+          assert.equal(parsed[name], value)
         }
       })
     }
+  }
+
+export const shouldHaveHeaders =
+  (exp) =>
+  ({ headers }) => {
+    Object.entries(exp).forEach(([header, value]) => {
+      if (value instanceof RegExp) {
+        assert.ok(
+          value.test(headers[header]),
+          `${header} ${value} !== ${headers[header]}`
+        )
+      } else if (typeof value === 'boolean' && value === true) {
+        assert.ok(header in headers, `${header} : ${headers[header]}`)
+      } else if (typeof value === 'boolean' && value === false) {
+        assert.ok(!(header in headers), `${header} : ${headers[header]}`)
+      } else {
+        assert.strictEqual(headers[header], value)
+      }
+    })
+  }

@@ -2,7 +2,7 @@ import * as veloze from 'veloze'
 const { random64, ms } = veloze.utils
 
 /**
- * @typedef {import('./types').ReqSession} ReqSession
+ * @typedef {import('#types.js').ReqSession} ReqSession
  */
 
 const EXTEND_EXPIRY = 'extendExpiry'

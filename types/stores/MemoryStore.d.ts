@@ -35,5 +35,5 @@ export class MemoryStore {
      */
     clear(): Promise<void>;
 }
-export type Session = import('../Session.js').Session;
-export type Store = import('../types.js').Store;
+export type Session = import("../Session.js").Session;
+export type Store = import("../types.js").Store;

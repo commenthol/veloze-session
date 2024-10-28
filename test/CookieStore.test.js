@@ -32,7 +32,6 @@ describe('CookieStore', function () {
   it('needs a secret', function () {
     assert.throws(
       () => {
-        // eslint-disable-next-line no-new
         new CookieStore()
       },
       {
@@ -45,7 +44,6 @@ describe('CookieStore', function () {
   it('secret must have an assigned key id', function () {
     assert.throws(
       () => {
-        // eslint-disable-next-line no-new
         new CookieStore({ secrets: ['secret'] })
       },
       {

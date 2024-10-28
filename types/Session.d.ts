@@ -18,10 +18,10 @@ export class Session {
      * - opts.initialData: initial or default session data
      */
     constructor(req: Request, opts?: {
-        name?: string | undefined;
-        sessionId?: string | undefined;
-        expires?: string | number | undefined;
-        randomId?: (() => string) | undefined;
+        name?: string;
+        sessionId?: string;
+        expires?: string | number;
+        randomId?: () => string;
         initialData?: object;
     } | undefined);
     name: string;
@@ -50,9 +50,9 @@ export class Session {
      * }|null} freshData
      */
     assign(freshData: {
-        id?: string | undefined;
-        iat?: number | undefined;
-        exp?: number | undefined;
+        id?: string;
+        iat?: number;
+        exp?: number;
         data?: object;
     } | null): boolean;
     iat: any;
@@ -84,5 +84,5 @@ export class Session {
     isExpired(): boolean;
     extendExpiry(): void;
 }
-export type ReqSession = import('./types').ReqSession;
+export type ReqSession = import("#types.js").ReqSession;
 import * as veloze from 'veloze';

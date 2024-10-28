@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * @param {{ alg: string, [key: string]: string|number|undefined}} header
  * @param {object} payload payload to sign
@@ -13,11 +12,11 @@
  * - key: private key for RS256/RS384/RS512
  */
 export function jwtSign(header: {
-    [key: string]: string | number | undefined;
     alg: string;
+    [key: string]: string | number | undefined;
 }, payload: object, opts: {
-    expires?: number | undefined;
-    secret?: string | undefined;
-    key?: string | Buffer | crypto.KeyObject | crypto.PrivateKeyInput | crypto.JsonWebKeyInput | undefined;
+    expires?: number;
+    secret?: string;
+    key?: string | Buffer | crypto.PrivateKeyInput | crypto.JsonWebKeyInput | crypto.KeyObject;
 }): string;
 import * as crypto from 'node:crypto';

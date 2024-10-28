@@ -1,7 +1,7 @@
 /**
- * @typedef {import('./types').Store} Store
+ * @typedef {import('#types.js').Store} Store
  */ /**
-* @typedef {import('veloze/types').CookieOpts} CookieOpts
+* @typedef {import('veloze').CookieOpts} CookieOpts
 */
 /**
  * Session middleware
@@ -32,17 +32,17 @@
  * - secrets[].kid: keyId to identify the secret from the JWT header
  */
 export function session(opts: {
-    store?: import("./types").Store | undefined;
-    expires?: string | number | undefined;
-    name?: string | undefined;
-    cookieOpts?: import("veloze/types").CookieOpts | undefined;
-    extendExpiry?: boolean | undefined;
+    store?: Store;
+    expires?: string | number;
+    name?: string;
+    cookieOpts?: CookieOpts;
+    extendExpiry?: boolean;
     initialData?: object;
     secrets?: {
         kid: string;
         secret: string;
-    }[] | undefined;
-    randomId?: (() => string) | undefined;
-}): import('veloze/types/types.js').Handler;
-export type Store = import('./types').Store;
-export type CookieOpts = import('veloze/types').CookieOpts;
+    }[];
+    randomId?: () => string;
+}): import("veloze/types/types.js").Handler;
+export type Store = import("#types.js").Store;
+export type CookieOpts = import("veloze").CookieOpts;

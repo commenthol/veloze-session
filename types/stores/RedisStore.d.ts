@@ -21,7 +21,7 @@ export class RedisStore {
         client: Redis;
     });
     _keyPrefix: string;
-    _redis: import("ioredis/built/Redis.js").default;
+    _redis: import("ioredis").default;
     /**
      * Store session with sessionId in store
      * @param {Session} session
@@ -53,6 +53,6 @@ export class RedisStore {
      */
     clear(): Promise<void>;
 }
-export type Redis = import('ioredis').Redis;
-export type Session = import('../Session.js').Session;
-export type Store = import('../types.js').Store;
+export type Redis = import("ioredis").Redis;
+export type Session = import("../Session.js").Session;
+export type Store = import("../types.js").Store;

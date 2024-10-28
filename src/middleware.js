@@ -9,9 +9,9 @@ const { onWriteHead, setCookie, clearCookie } = veloze.response
 const log = logger()
 
 /**
- * @typedef {import('./types').Store} Store
+ * @typedef {import('#types.js').Store} Store
  */ /**
- * @typedef {import('veloze/types').CookieOpts} CookieOpts
+ * @typedef {import('veloze').CookieOpts} CookieOpts
  */
 
 /**
@@ -93,7 +93,12 @@ export function session(opts) {
         // all must be synchronous calls!
         if (session.hasChanged) {
           // try to store session
-          log.debug('saving session id=%s exp=%s data=%j', session.id, session.exp, session.data)
+          log.debug(
+            'saving session id=%s exp=%s data=%j',
+            session.id,
+            session.exp,
+            session.data
+          )
           store.set(session).catch(log.error)
         }
         if (!session.cookie) {

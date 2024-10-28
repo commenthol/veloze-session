@@ -8,7 +8,12 @@ import { MongoStore } from '../src/stores/MongoStore.js'
 
 dotenv.config()
 
-const { MONGODB_URL = 'mongodb://root:example@127.0.0.1:27017' } = process.env
+let { MONGO_INITDB_ROOT_USERNAME, MONGO_INITDB_ROOT_PASSWORD, MONGODB_URL } =
+  process.env
+
+MONGODB_URL =
+  MONGODB_URL ??
+  `mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@127.0.0.1:27017`
 
 describeBool(isDockerRunning('mongo'))('MongoStore', function () {
   let store
