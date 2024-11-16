@@ -1,3 +1,7 @@
+# 1.0.0 (2024-11-16)
+
+- chore: bump dependencies (#01aa1f5)
+
 # 0.2.1 (2024-01-31)
 
 - chore: bump dependencies (#b43028d)
