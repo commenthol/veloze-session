@@ -23,7 +23,7 @@ export class Session {
         expires?: string | number;
         randomId?: () => string;
         initialData?: object;
-    } | undefined);
+    });
     name: string;
     req: Request;
     _randomId: typeof veloze.utils.random64;

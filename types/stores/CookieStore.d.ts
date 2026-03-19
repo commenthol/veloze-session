@@ -39,7 +39,7 @@ export class CookieStore {
         }[];
     });
     _kid: string | undefined;
-    _secret: Uint8Array;
+    _secret: Uint8Array<ArrayBuffer>;
     _kids: {};
     /**
      * Store session with sessionId in store

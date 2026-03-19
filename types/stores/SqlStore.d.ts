@@ -35,7 +35,7 @@ export class SqlStore {
     init(opts?: {
         force?: boolean;
         alter?: boolean;
-    } | undefined): Promise<void>;
+    }): Promise<void>;
     /**
      * Store session with sessionId in store
      * @param {Session} session
